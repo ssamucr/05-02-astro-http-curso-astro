@@ -8,10 +8,18 @@ export const prerender = false;
  * GET /api/clients
  * Obtiene todos los registros de la tabla Clients
  */
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ locals }) => {
   try {
+    // Obtener variables de entorno del runtime de Cloudflare
+    const env = locals.runtime?.env;
+    
+    // Debug: ver qué hay en locals
+    console.log('locals:', JSON.stringify(locals, null, 2));
+    console.log('env:', env);
+    console.log('TURSO_DATABASE_URL:', env?.TURSO_DATABASE_URL);
+    
     // Ejecutar consulta SELECT
-    const result = await executeSql('SELECT * FROM Clients');
+    const result = await executeSql('SELECT * FROM Clients', [], env);
     
     console.log('Registros obtenidos:', result.rows.length);
 
@@ -45,8 +53,11 @@ export const GET: APIRoute = async () => {
  * Crea un nuevo registro en la tabla Clients
  * Body esperado: { name: string, age: number, isActive: number }
  */
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
+    // Obtener variables de entorno del runtime de Cloudflare
+    const env = locals.runtime?.env;
+    
     // Parsear body del request (excluir 'id' si viene en el body)
     const { id, ...clientData } = await request.json();
     
@@ -58,10 +69,10 @@ export const POST: APIRoute = async ({ request }) => {
     const insertSql = `INSERT INTO Clients (${columns}) VALUES (${placeholders})`;
     
     // Ejecutar INSERT
-    await executeSql(insertSql, values);
+    await executeSql(insertSql, values, env);
     
     // Obtener el ID del registro recién insertado
-    const lastIdResult = await executeSql('SELECT last_insert_rowid() as id');
+    const lastIdResult = await executeSql('SELECT last_insert_rowid() as id', [], env);
     const newId = lastIdResult.rows?.[0]?.[0]?.value || null;
 
     // Retornar respuesta exitosa con status 201 (Created)

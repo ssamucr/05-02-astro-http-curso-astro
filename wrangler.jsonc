@@ -14,8 +14,7 @@
 		"enabled": true
 	},
 	"vars": {
-		"TURSO_DATABASE_URL": "libsql://05-database-ssamucr.aws-us-east-2.turso.io",
-		"TURSO_AUTH_TOKEN": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NzUzMzI2NzgsImlkIjoiMDE5ZDU0ZDMtNzYwMS03MTZhLTgzZjItYWVmOTFhNWZkMzM1IiwicmlkIjoiNmFhZmY2YmEtMGRlOC00YWFjLWExNWUtYmFjZjMyOWI1OGI1In0.uGTxfy-IhuQao4E_Dj1L9KmD43kaO2kGOZ2l368ySC1OeA6_ndxV4mvjmSNxwOkCGc9r2nKXJBIUhTuwraplDQ"
+		"TURSO_DATABASE_URL": "libsql://05-database-ssamucr.aws-us-east-2.turso.io"
 	},
 	"routes": [
 		{

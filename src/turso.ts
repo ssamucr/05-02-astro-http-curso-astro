@@ -1,11 +1,4 @@
 /**
- * Configuración de conexión a Turso
- * Las credenciales se cargan desde variables de entorno
- */
-const TURSO_DATABASE_URL = import.meta.env.TURSO_DATABASE_URL;
-const TURSO_AUTH_TOKEN = import.meta.env.TURSO_AUTH_TOKEN;
-
-/**
  * Convierte un valor de JavaScript al formato esperado por Turso
  * @param arg - Valor a convertir (string, number, boolean, null)
  * @returns Objeto con type y value en formato Turso
@@ -42,9 +35,14 @@ function formatArgumentForTurso(arg: any) {
  * Ejecuta una consulta SQL en Turso usando la API HTTP
  * @param sql - Consulta SQL a ejecutar (soporta placeholders ?)
  * @param args - Parámetros para los placeholders (previene SQL injection)
+ * @param env - Variables de entorno (runtime.env en Cloudflare Workers)
  * @returns Resultado de la consulta
  */
-export async function executeSql(sql: string, args: any[] = []) {
+export async function executeSql(sql: string, args: any[] = [], env?: any) {
+  // Obtener credenciales desde el ambiente (producción) o import.meta.env (desarrollo)
+  const TURSO_DATABASE_URL = env?.TURSO_DATABASE_URL || import.meta.env.TURSO_DATABASE_URL;
+  const TURSO_AUTH_TOKEN = env?.TURSO_AUTH_TOKEN || import.meta.env.TURSO_AUTH_TOKEN;
+  
   // Construir URL del endpoint de Turso
   const apiUrl = TURSO_DATABASE_URL.replace("libsql://", "https://") + "/v2/pipeline";
   
