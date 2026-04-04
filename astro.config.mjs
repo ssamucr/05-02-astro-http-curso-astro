@@ -10,13 +10,10 @@ import cloudflare from '@astrojs/cloudflare';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://example.com',
-
-  output: 'static',
   // adapter: node({
   //   mode: 'standalone',
   // }),
-  integrations: [mdx(), sitemap()],
+  site: 'https://example.com',
 
   adapter: cloudflare(),
 });
