@@ -1,6 +1,9 @@
 {
 	"compatibility_date": "2026-04-04",
-	"compatibility_flags": ["global_fetch_strictly_public"],
+	"compatibility_flags": [
+		"global_fetch_strictly_public",
+		"nodejs_compat"
+	],
 	"name": "05-02-astro-http-curso-astro",
 	"main": "@astrojs/cloudflare/entrypoints/server",
 	"assets": {

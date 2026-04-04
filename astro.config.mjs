@@ -16,4 +16,5 @@ export default defineConfig({
   site: 'https://example.com',
 
   adapter: cloudflare(),
+  integrations: [mdx(), sitemap()],
 });
