@@ -9,6 +9,7 @@
     "dist"
   ],
   "compilerOptions": {
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "types": ["@cloudflare/workers-types"]
   }
 }

@@ -49,7 +49,7 @@ export const GET: APIRoute = async () => {
 export const POST: APIRoute = async ({ request }) => {
   try {
     // Parsear body del request (excluir 'id' si viene en el body)
-    const { id, ...clientData } = await request.json();
+    const { id, ...clientData } = await request.json() as { id?: string, [key: string]: any };
     
     // Construir SQL INSERT con placeholders seguros (previene SQL injection)
     const columns = Object.keys(clientData).join(', ');
