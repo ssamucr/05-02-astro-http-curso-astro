@@ -1,36 +1,92 @@
 import type { APIRoute } from "astro";
-import { turso } from "../../../turso";
+import { executeSql } from "../../../turso";
 
+// Deshabilitar pre-renderizado para endpoints dinámicos
 export const prerender = false;
 
+/**
+ * GET /api/clients
+ * Obtiene todos los registros de la tabla Clients
+ */
 export const GET: APIRoute = async () => {
-  
-    // ESTE CODIGO A CONTINUACION LAS LINEAS 9 Y 11 ES EL QUE HAY QUE DESCOMENTAR Y HACER QUE FUNCIONE
-    // const {rows} = await turso.execute('SELECT * FROM Clients');
+  try {
+    // Ejecutar consulta SELECT
+    const result = await executeSql('SELECT * FROM Clients');
+    
+    console.log('Registros obtenidos:', result.rows.length);
 
-    // console.log(rows);
-
-  return new Response(JSON.stringify({}), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+    // Retornar respuesta exitosa con los datos
+    return new Response(
+      JSON.stringify({ clients: result.rows }), 
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+    
+  } catch (error) {
+    // Manejar errores y retornar respuesta con status 500
+    console.error('Error en GET /api/clients:', error);
+    
+    return new Response(
+      JSON.stringify({ 
+        error: error instanceof Error ? error.message : 'Error desconocido' 
+      }), 
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+  }
 }
 
-// export const POST: APIRoute = async ( {params, request } ) => {
-//     try {
-//         const {id, ...body} = await request.json();
+/**
+ * POST /api/clients
+ * Crea un nuevo registro en la tabla Clients
+ * Body esperado: { name: string, age: number, isActive: number }
+ */
+export const POST: APIRoute = async ({ request }) => {
+  try {
+    // Parsear body del request (excluir 'id' si viene en el body)
+    const { id, ...clientData } = await request.json();
+    
+    // Construir SQL INSERT con placeholders seguros (previene SQL injection)
+    const columns = Object.keys(clientData).join(', ');
+    const placeholders = Object.keys(clientData).map(() => '?').join(', ');
+    const values = Object.values(clientData);
+    
+    const insertSql = `INSERT INTO Clients (${columns}) VALUES (${placeholders})`;
+    
+    // Ejecutar INSERT
+    await executeSql(insertSql, values);
+    
+    // Obtener el ID del registro recién insertado
+    const lastIdResult = await executeSql('SELECT last_insert_rowid() as id');
+    const newId = lastIdResult.rows?.[0]?.[0]?.value || null;
 
-//         const { lastInsertRowid } = await db.insert(Clients).values(body);
-
-//         return new Response(JSON.stringify({ id: lastInsertRowid?.toString(), ...body }), {
-//             status: 201,
-//             headers: { "Content-Type": "application/json" },
-//         });
-//     } catch (error) {
-//         const errorMessage = error instanceof Error ? error.message : "Unknown error";
-//         return new Response(JSON.stringify({ msg: errorMessage }), {
-//             status: 500,
-//             headers: { "Content-Type": "application/json" },
-//         });
-//     }
-// }
+    // Retornar respuesta exitosa con status 201 (Created)
+    return new Response(
+      JSON.stringify({ 
+        id: newId, 
+        ...clientData 
+      }), 
+      {
+        status: 201,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+    
+  } catch (error) {
+    // Manejar errores y retornar respuesta con status 500
+    const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+    console.error('Error en POST /api/clients:', errorMessage);
+    
+    return new Response(
+      JSON.stringify({ error: errorMessage }), 
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+  }
+}

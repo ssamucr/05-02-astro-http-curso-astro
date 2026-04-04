@@ -12,5 +12,8 @@
 	},
 	"observability": {
 		"enabled": true
+	},
+	"vars": {
+		"TURSO_DATABASE_URL": "libsql://05-database-ssamucr.aws-us-east-2.turso.io"
 	}
 }
