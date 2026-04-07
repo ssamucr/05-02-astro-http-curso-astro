@@ -73,6 +73,6 @@ export async function executeSql(sql: string, args: any[] = [], env?: any) {
   const data = await response.json() as { results: Array<{ response: any }> };
   const responseData = data.results[0].response;
   
-  // SELECT devuelve 'result', INSERT/UPDATE/DELETE devuelven solo 'response'
+  // SELECT devuelve 'result' con cols y rows, INSERT/UPDATE/DELETE devuelven solo 'response'
   return responseData.result || responseData;
 }
