@@ -12,6 +12,7 @@
     import { ref, onMounted, watch } from 'vue';
     import confetti from 'canvas-confetti';
     import debounce from 'lodash.debounce';
+import { actions } from 'astro:actions';
 
     interface Props {
         slug: string;
@@ -35,10 +36,18 @@
         likeClicks.value = 0;
     }, 500));
 
-    const likePost = () => {
+    const likePost = async() => {
         
         likeCount.value += 1;
         likeClicks.value += 1;
+
+        const { data, error } = await actions.getGreeting({name: 'Samuelito'});
+
+        if (error) {
+            console.error('Error calling getGreeting action:', error);
+        } else {
+            console.log('Response from getGreeting action:', data);
+        }
 
         confetti({
             particleCount: 100,
@@ -57,7 +66,7 @@
             console.error('Error fetching likes:', resp.statusText);
             return;
         }
-        const data = await resp.json();
+        const data = await resp.json() as { likes: number };
         likeCount.value = data.likes;
         isLoading.value = false;
     };
